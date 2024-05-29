@@ -1,0 +1,47 @@
+{
+  "name": "ssml_voice_editor",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "core-js": "^3.8.3",
+    "jodit": "^3.4.38",
+    "jodit-vue": "^2.1.1",
+    "vue": "^3.2.13",
+    "vue-router": "^4.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@types/node": "^18.0.3",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "less": "^4.2.0",
+    "less-loader": "^11.1.3",
+    "webpack": "^5.88.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
