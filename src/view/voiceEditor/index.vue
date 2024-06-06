@@ -30,7 +30,7 @@
         ref="editorRef"
         :value="editorContent"
         :config="editorConfig"
-        :height="'424px'"
+        :height="'480px'"
         :width="'1080px'"
         class="textEditor"
       ></JoditVue>
@@ -584,9 +584,13 @@ const emotionText = ref("");
  * @param {*} name
  */
 function emotionFun(name) {
-  const style = document.createElement("style");
-  style.innerHTML = `.jodit-toolbar-button_emotionEnum .jodit-toolbar-button__button:after { content: "情绪 - ${name.desc}" }`;
-  document.head.appendChild(style);
+  const emotionButton = document.querySelector('.jodit-toolbar-button_emotionEnum .jodit-toolbar-button__button');
+  if (emotionButton) {
+    const span = document.createElement('span');
+    span.textContent = `情绪 - ${name.desc}`;
+    emotionButton.innerHTML = '';
+    emotionButton.appendChild(span);
+  }
   emotionVal.value = name.value;
   emotionText.value = name.desc;
 }
