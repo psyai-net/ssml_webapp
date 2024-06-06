@@ -584,13 +584,9 @@ const emotionText = ref("");
  * @param {*} name
  */
 function emotionFun(name) {
-  const emotionButton = document.querySelector('.jodit-toolbar-button_emotionEnum .jodit-toolbar-button__button');
-  if (emotionButton) {
-    const span = document.createElement('span');
-    span.textContent = `情绪 - ${name.desc}`;
-    emotionButton.innerHTML = '';
-    emotionButton.appendChild(span);
-  }
+  const style = document.createElement("style");
+  style.innerHTML = `.jodit-toolbar-button_emotionEnum .jodit-toolbar-button__button:after { content: "情绪 - ${name.desc}" }`;
+  document.head.appendChild(style);
   emotionVal.value = name.value;
   emotionText.value = name.desc;
 }
