@@ -360,15 +360,15 @@
     position: relative;
     margin-right: 8px !important;
     overflow: inherit;
-}
-.with-divider:after {
-    content: "|";
-    width: 4px;
-    height: 16px;
-    position: absolute;
-    right: -6px;
-    top: 8px;
-    color: rgba(89, 89, 89, 0.20);
+    &::after {
+        content: "|";
+        width: 4px;
+        height:16px;
+        position: absolute;
+        right: -6px;
+        top: 8px;
+        color: rgba(89, 89, 89, 0.20);
+    }
 }
 .jodit-toolbar-button_undoButton .jodit-toolbar-button__button:after {
     content: "撤销"; /* 自定义按钮的名称 */
