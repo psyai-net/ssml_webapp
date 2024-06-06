@@ -1377,6 +1377,29 @@ async function handleMessage(event) {
     disabledAll(false);
     disabledState(["emotionEnum"], true);
     editorContentHtml.value = propsData.text;
+    setTimeout(() => {
+      const el = document.querySelector(".jodit-wysiwyg");
+      el.focus();
+      moveCursorToEnd(el);
+    }, 300);
+    function moveCursorToEnd(el) {
+      if (
+        typeof window.getSelection != "undefined" &&
+        typeof document.createRange != "undefined"
+      ) {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+      }
+    }
     if (!speakerCompanyAvalibleTags.value.length) {
       tipsFun("当前音色暂不支持语音标签调节设置", 1500);
     }
