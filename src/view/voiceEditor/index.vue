@@ -30,7 +30,7 @@
         ref="editorRef"
         :value="editorContent"
         :config="editorConfig"
-        :height="'424px'"
+        :height="'480px'"
         :width="'1080px'"
         class="textEditor"
       ></JoditVue>
