@@ -2,12 +2,14 @@ const MICROSOFT = "azure";
 const TENCENT = "tencent";
 const CHUMENWENWEN = "moyin";
 const ALIYUN = "alibaba";
+const ELEVENLABS = "eleven-labs";
 
 export const ID_TO_COMPANYS = {
   "642a7b3fb9b3dde907f9a740": MICROSOFT,
   "647f3ab2710f103710858f9a": TENCENT,
   "64f03887f4a4549398d61e35": CHUMENWENWEN,
   "656d7a0d32e6b419094a6ee0": ALIYUN,
+  "64c9cc0680009c782090c73a": ELEVENLABS,
 };
 /**
  * 不同厂商可用的 SSML 标签映射关系
@@ -34,6 +36,7 @@ export const SSML_TAG_AVALIBLE_MAP = {
   [TENCENT]: ["pauseEnum", "pinyin", "digitSymbolEnum"],
   [CHUMENWENWEN]: ["pauseEnum", "continuous", "pinyin", "digitSymbolEnum"],
   [ALIYUN]: ["pauseEnum", "digitSymbolEnum"],
+  [ELEVENLABS]:[],
 };
 
 export const REAL_SSML_TAG_MAP = {
@@ -75,6 +78,9 @@ export const REAL_SSML_TAG_MAP = {
     digitSymbolEnum: (content, value) =>
       `<say-as interpret-as="${value}">${content}</say-as>`,
   },
+  [ELEVENLABS]:{
+    wrapper: (content) => `${content}`,
+  }
 };
 /**
  * SSML 标签嵌套规则
