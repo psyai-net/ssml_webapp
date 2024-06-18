@@ -2,7 +2,7 @@ const MICROSOFT = "azure";
 const TENCENT = "tencent";
 const CHUMENWENWEN = "moyin";
 const ALIYUN = "alibaba";
-const ELEVENLABS = "eleven-labs";
+const ELEVENLABS = "ElevenLabs";
 
 export const ID_TO_COMPANYS = {
   "642a7b3fb9b3dde907f9a740": MICROSOFT,
