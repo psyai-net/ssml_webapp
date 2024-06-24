@@ -1,0 +1,47 @@
+{
+  "zh-CN": {
+    "title": "文本编辑",
+    "cancel": "取消",
+    "save": "保存",
+    "remove": "移除",
+    "continuous": "连续词语",
+    "hasUnavailableTagTip": "修改音色后部分设置不可用，请点击文本框修改",
+    "emptyContentTip": "没有内容无法试听",
+    "tooLongContentTip": "编辑内容不能超过2000字",
+    "invalidRangeTip": "划选范围有误",
+    "invalidRangeTip2": "移除此标签，请先把它内部标签先移除掉。",
+    "avalibleTagsTip": "当前音色暂不支持语音标签调节设置",
+    "generateFailed": "生成失败",
+    "operateFailed": "选中标签的时候，鼠标移出编辑器之外，会禁止上面部分的功能"
+  },
+  "en-US": {
+    "title": "Edit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "remove": "Remove",
+    "continuous": "Continuity",
+    "hasUnavailableTagTip": "Some settings are unavailable after changing the tone, please click the text box to modify",
+    "emptyContentTip": "No content to preview",
+    "tooLongContentTip": "The content cannot exceed 2000 characters",
+    "invalidRangeTip": "Selection range is incorrect",
+    "invalidRangeTip2": "To remove this tag, please remove its internal tags first",
+    "avalibleTagsTip": "The current tone does not support voice tag adjustment settings",
+    "generateFailed": "Generation failed",
+    "operateFailed": "When tagging, moving the mouse out of the editor will disable some functions"
+  },
+  "ja-JP": {
+    "title": "編集",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "remove": "削除",
+    "continuous": "連続語",
+    "hasUnavailableTagTip": "音色を変更すると一部の設定が使用できなくなります。テキストボックスをクリックして修正してください",
+    "emptyContentTip": "コンテンツがないためプレビューできません",
+    "tooLongContentTip": "編集内容は2000文字を超えてはなりません",
+    "invalidRangeTip": "選択範囲が間違っています",
+    "invalidRangeTip2": "このタグを削除するには、まずその内部タグを削除してください",
+    "avalibleTagsTip": "現在の音色は音声タグの調整設定をサポートしていません",
+    "generateFailed": "生成に失敗しました",
+    "operateFailed": "タグ付けの際、マウスをエディタの外に移動すると、一部の機能が無効になります"
+  }
+}

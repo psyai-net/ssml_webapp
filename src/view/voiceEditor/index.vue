@@ -1,9 +1,9 @@
 <template>
-  <div class="voiceEditorBg">
+  <div :class="['voiceEditorBg', viewLang]">
     <div class="voiceEditorTips animationSlide" @click.capture="closeDropDown">
       <!-- 标题 -->
       <div class="textEditorTitle readonly">
-        文本编辑
+        {{ currentLangData.title }}
         <span class="textEditorTitleClose" @click="canceEditor">×</span>
       </div>
       <!-- 功能项下拉列表 -->
@@ -45,14 +45,14 @@
           contenteditable="false"
           @click="canceEditor"
         >
-          取消
+          {{ localData[viewLang].cancel }}
         </div>
         <div
           class="preserve readonly"
           contenteditable="false"
           @click="confirmClick"
         >
-          保存
+          {{ localData[viewLang].save }}
         </div>
       </div>
       <!-- loading浮层 -->
@@ -127,6 +127,7 @@ import {
   SSML_TAG_NEST_RULE,
   REAL_SSML_TAG_MAP,
 } from "./config";
+import localData from "./local.json";
 
 const { tipMsg, tipsFun } = useTips();
 
@@ -136,6 +137,8 @@ const saveDataHTML = ref(null);
 const saveDataSSML = ref(null);
 const saveDataStr = ref(null);
 
+const viewLang = ref("zh-CN");
+const currentLangData = computed(() => localData[viewLang.value]);
 const editorRef = ref(null);
 const textEditorTitle = ref("");
 const loaderShow = ref(false);
@@ -183,7 +186,7 @@ watch(speakerCompany, async () => {
 // 有不可用标签时给出提示
 watch(hasUnavailableTag, () => {
   if (hasUnavailableTag.value) {
-    tipsFun("修改音色后部分设置不可用，请点击文本框修改", 1500);
+    tipsFun(currentLangData.value.hasUnavailableTagTip, 1500);
   }
 });
 
@@ -431,19 +434,43 @@ const editorObj = reactive({
   value: "",
 });
 // 编辑器功能按钮下拉弹窗定位
-const navOption = reactive({
-  pauseEnum: { left: 130, index: "" },
-  speechSpeedEnum: { left: 180, index: "" },
-  continuous: { left: 254, index: "" },
-  pinyin: { left: 334, index: "" },
-  digitSymbolEnum: { left: 396, index: "" },
-  volumeEnum: { left: 470, index: "" },
-  toneEnum: { left: 520, index: "" },
-  emotionEnum: { left: 580, index: "" },
+const navOption = computed(() => {
+  return {
+    "zh-CN": {
+      pauseEnum: { left: 130, index: "" },
+      speechSpeedEnum: { left: 180, index: "" },
+      continuous: { left: 254, index: "" },
+      pinyin: { left: 334, index: "" },
+      digitSymbolEnum: { left: 396, index: "" },
+      volumeEnum: { left: 470, index: "" },
+      toneEnum: { left: 520, index: "" },
+      emotionEnum: { left: 580, index: "" },
+    },
+    "en-US": {
+      pauseEnum: { left: 130, index: "" },
+      speechSpeedEnum: { left: 240, index: "" },
+      continuous: { left: 404, index: "" },
+      pinyin: { left: 534, index: "" },
+      digitSymbolEnum: { left: 696, index: "" },
+      volumeEnum: { left: 720, index: "" },
+      toneEnum: { left: 800, index: "" },
+      emotionEnum: { left: 860, index: "" },
+    },
+    "ja-JP": {
+      pauseEnum: { left: 130, index: "" },
+      speechSpeedEnum: { left: 200, index: "" },
+      continuous: { left: 284, index: "" },
+      pinyin: { left: 394, index: "" },
+      digitSymbolEnum: { left: 426, index: "" },
+      volumeEnum: { left: 540, index: "" },
+      toneEnum: { left: 590, index: "" },
+      emotionEnum: { left: 620, index: "" },
+    },
+  }[viewLang.value];
 });
 const navArrList = computed(() => navDataList[editorObj.type] || []);
 const leftDropDownLeft = computed(() =>
-  editorObj.type ? navOption[editorObj.type].left + "px" : ""
+  editorObj.type ? navOption.value[editorObj.type].left + "px" : ""
 );
 /**
  * DropDownClose优先于leftDropClick执行：关闭下拉列表
@@ -526,7 +553,9 @@ function navClick(name) {
         data-optionBtn="optionBtn"
       >`,
       // 按钮文案
-      `<b>${name.desc}</b>`,
+      `<b>${
+        editType === "continuous" ? currentLangData.value.continuous : name.desc
+      }</b>`,
       // `<div class="disabled-tip"></div>`,
       // `<s style="display: none" class="noneNode">${name.value}</s>`,
       // 下拉列表
@@ -562,7 +591,7 @@ function navClick(name) {
         data-index="${-1}"
       >
         <p></p>
-        <span>移除</span>
+        <span>${currentLangData.value.remove}</span>
       </div>`,
       `</div>`,
       `</div>`,
@@ -597,11 +626,11 @@ const audioPlayer = ref(null);
 const playing = ref(false);
 async function auditionClick() {
   if (document.querySelector(".jodit-wysiwyg").innerHTML == "") {
-    tipsFun("没有内容无法试听", 1500);
+    tipsFun(currentLangData.value.emptyContentTip, 1500);
     return;
   }
   if (editorText.value.length > 2000) {
-    tipsFun("编辑内容不能超过2000字", 1500);
+    tipsFun(currentLangData.value.tooLongContentTip, 1500);
     return;
   }
   const audioElRef = audioPlayer.value;
@@ -903,7 +932,7 @@ async function handleEditorContentClick(event) {
           ]),
           true
         );
-        tipsFun("划选范围有误");
+        tipsFun(currentLangData.value.invalidRangeTip);
       } else if (selectedSSMLTags.length) {
         // 根据内层标签+标签嵌套规则，判断按钮是否可用
         disabledAll(false);
@@ -1073,7 +1102,7 @@ async function handleEditorContentClick(event) {
     const editorTagsElementsTags =
       parentElement.querySelectorAll(".editorTags");
     if (editorTagsElementsTags.length) {
-      tipsFun("移除此标签，请先把它内部标签先移除掉。");
+      tipsFun(currentLangData.value.invalidRangeTip2);
       return;
     }
     const valTextElement = Array.from(
@@ -1189,7 +1218,7 @@ function canceEditor() {
  */
 function confirmClick() {
   if (editorText.value.length > 2000) {
-    tipsFun("编辑内容不能超过2000字", 1500);
+    tipsFun(currentLangData.value.tooLongContentTip, 1500);
     return;
   }
   // 保存接口
@@ -1401,7 +1430,7 @@ async function handleMessage(event) {
       }
     }
     if (!speakerCompanyAvalibleTags.value.length) {
-      tipsFun("当前音色暂不支持语音标签调节设置", 1500);
+      tipsFun(currentLangData.value.avalibleTagsTip, 1500);
     }
   }
   if (event.data?.payload?.type === "ssml_get_pinyin_callback") {
@@ -1420,7 +1449,7 @@ async function handleMessage(event) {
       setTimeout(togglePlayback, 0);
       ssmlHTML.value = htmlToSsml();
     } else {
-      tipsFun("生成失败", 1500);
+      tipsFun(currentLangData.value.generateFailed, 1500);
     }
     setTimeout(() => (loaderShow.value = false), 500);
   }
@@ -1428,6 +1457,7 @@ async function handleMessage(event) {
 async function setProps(props) {
   Object.assign(propsData, props);
 
+  viewLang.value = props.lang || "zh-CN";
   // window.psyaiEditorUrl = props.baseUrl + "/";
   // window.psyaiEditorToken = props.token;
   // window.psyaiEditorUid = props.uid;
@@ -1515,7 +1545,7 @@ function init() {
     }
 
     if (!isJoditWysiwyg && window.getSelection().toString() && isClick.value) {
-      tipsFun("选中标签的时候，鼠标移出编辑器之外，会禁止上面部分的功能");
+      tipsFun(currentLangData.value.operateFailed);
       isClick.value = true;
       disabledAll(false);
     } else {
