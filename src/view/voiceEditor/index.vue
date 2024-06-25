@@ -1436,7 +1436,7 @@ async function handleMessage(event) {
   if (event.data?.payload?.type === "ssml_get_pinyin_callback") {
     const pinyinText = event.data.payload.data;
     if (pinyinText) {
-      const transformedArr = pinyinText.tone[0].map((value, i) => {
+      const transformedArr = (pinyinText.tone[0]||[]).map((value, i) => {
         return { value, desc: value, numValue: pinyinText.toneNum[0][i] };
       });
       navDataList.pinyin = transformedArr;
