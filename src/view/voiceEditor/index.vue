@@ -37,6 +37,29 @@
       <div class="editorText">{{ editorText.length }} / 2000</div>
       <!-- 取消/保存 -->
       <div class="textEditorBottom">
+        <div class="textEditorBottom__left">
+          <div class="speedSel">
+            <div class="speedSel__box" @click="speedSelShow = !speedSelShow">
+              <span>语速 {{ speedLabel }}</span>
+              <span class="speedSel__box__arrow"></span>
+            </div>
+            <div v-if="speedSelShow" class="speedSel__options">
+              <div
+                v-for="item in speedOptions"
+                :key="item.value"
+                :class="[
+                  'speedSel__options__item',
+                  {
+                    'speedSel__options__item--cur': item.value === speed,
+                  },
+                ]"
+                @click="speedSel(item.value)"
+              >
+                {{ item.label }}
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="save_msg" v-if="saveMsg">
           {{ saveMsg }}
         </div>
@@ -103,7 +126,7 @@ import emotion from "@/assets/voiceEditor/emotion.png"; //情绪
 import revoke from "@/assets/voiceEditor/revoke.png"; //返回
 import restore from "@/assets/voiceEditor/restore.png"; //恢复
 import pause from "@/assets/voiceEditor/pause.png"; //停顿
-import speed from "@/assets/voiceEditor/speed.png"; //语速
+import speedIcon from "@/assets/voiceEditor/speed.png"; //语速
 import continuous from "@/assets/voiceEditor/continuous.png"; //连续词语
 import multitone from "@/assets/voiceEditor/multitone.png"; //多音字
 import numIcon from "@/assets/voiceEditor/numIcon.png"; //数字符号
@@ -162,6 +185,7 @@ const propsData = reactive({});
 // const speakerInfo = reactive({});
 // const speakerCompany = computed(() => ID_TO_COMPANYS[speakerInfo.company]);
 const speakerCompany = computed(() => propsData.company);
+const isTencent = computed(()=> speakerCompany.value === TENCENT);
 const speakerCompanyAvalibleTags = computed(
   () => SSML_TAG_AVALIBLE_MAP[speakerCompany.value] || []
 );
@@ -225,7 +249,7 @@ const editorbuttonData = [
   {
     name: "speechSpeedEnum",
     tooltip: "请选择文本并设置局部语速",
-    iconURL: speed,
+    iconURL: speedIcon,
     exec: function (editor) {
       leftDropClick("speechSpeedEnum", editor); //局部语速
     },
@@ -493,6 +517,7 @@ function closeDropDown() {
       }, 10);
     });
   }
+  speedSelShow.value = false;
 }
 /**
  * 富文本编辑器功能按钮点击：显示下拉功能列表
@@ -663,6 +688,9 @@ async function auditionFun() {
     {
       payload: {
         type: "ssml_gen_audio",
+        audio: {
+          speed: isTencent.value ? Math.floor(speed.value*10)/10 : speed.value,
+        },
         data: {
           text: htmlToSsml(),
           original_text: editorText.value,
@@ -1199,6 +1227,41 @@ function editorContentChange(content) {
 // 编辑end
 
 /**
+ * 语速
+ */
+ const speed = ref(1);
+const speedOptions = [
+  {
+    label: "0.5x",
+    value: 0.5,
+  },
+  {
+    label: "0.75x",
+    value: 0.75,
+  },
+  {
+    label: "1.0x",
+    value: 1,
+  },
+  {
+    label: "1.25x",
+    value: 1.25,
+  },
+  {
+    label: "1.5x",
+    value: 1.5,
+  },
+];
+const speedLabel = computed(
+  () => speedOptions.find((item) => item.value === speed.value).label
+);
+const speedSelShow = ref(false);
+const speedSel = (v) => {
+  speed.value = v;
+  speedSelShow.value = false;
+};
+
+/**
  * 取消
  */
 function canceEditor() {
@@ -1233,6 +1296,7 @@ function confirmClick() {
       payload: {
         type: "ssml_confirm",
         data: {
+          speed: isTencent.value ? Math.floor(speed.value*10)/10 : speed.value,
           saveDataHTML: saveDataHTML.value,
           saveDataSSML: saveDataSSML.value,
           saveDataStr: saveDataStr.value,

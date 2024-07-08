@@ -306,6 +306,64 @@
     justify-content: flex-end;
     padding-right: 25px;
     // background: #29292d;
+    &__left {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .speedSel {
+        position: relative;
+        height: 40px;
+
+        &__box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 120px;
+            height: 24px;
+            color: #fff;
+            padding: 8px;
+            background: #000;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &__arrow {
+                width: 12px;
+                height: 12px;
+                background: url('../../assets/arrow-up.png') no-repeat center;
+                background-size: 100% 100%;
+            }
+        }
+        &__options {
+            position: absolute;
+            bottom: 46px;
+            left: 0;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 6px;
+            box-sizing: border-box;
+            background: #000;
+
+            &__item {
+                line-height: 36px;
+                cursor: pointer;
+                color: #fff;
+                text-align: left;
+                padding-left: 36px;
+
+                &:hover {
+                    background-color: #000;
+                }
+
+                &--cur {
+                    background: url('../../assets/voiceEditor/check.png') no-repeat 10px center;
+                    background-size: 16px;
+                }
+            }
+        }
+    }
     .cancel{
         display: inline-flex;
         padding: 8px 16px;
