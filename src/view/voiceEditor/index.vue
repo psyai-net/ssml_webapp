@@ -145,7 +145,7 @@ import useTips from "@/hooks/useTips";
 import { escapeSpecialCharacters, unescapeSpecialCharacters } from "@/utill";
 // config
 import {
-  ID_TO_COMPANYS,
+  TENCENT,
   SSML_TAG_AVALIBLE_MAP,
   SSML_TAG_NEST_RULE,
   REAL_SSML_TAG_MAP,
@@ -185,7 +185,7 @@ const propsData = reactive({});
 // const speakerInfo = reactive({});
 // const speakerCompany = computed(() => ID_TO_COMPANYS[speakerInfo.company]);
 const speakerCompany = computed(() => propsData.company);
-const isTencent = computed(()=> speakerCompany.value === TENCENT);
+const isTencent = computed(() => speakerCompany.value === TENCENT);
 const speakerCompanyAvalibleTags = computed(
   () => SSML_TAG_AVALIBLE_MAP[speakerCompany.value] || []
 );
@@ -668,18 +668,19 @@ async function auditionClick() {
     playing.value = false;
     return;
   }
+  auditionFun();
   // 如果内容没有变化：切换播放状态
-  if (ssmlHTML.value == htmlToSsml()) {
-    setTimeout(togglePlayback, 0);
-  } else {
-    auditionFun();
-    // 调用后端方法，后端判断是否触发试听
-    // if (developMode) {
-    //   auditionFun();
-    // } else {
-    //   psyaiAudition(editorText.value);
-    // }
-  }
+  // if (ssmlHTML.value == htmlToSsml()) {
+  //   setTimeout(togglePlayback, 0);
+  // } else {
+  //   auditionFun();
+  //   // 调用后端方法，后端判断是否触发试听
+  //   // if (developMode) {
+  //   //   auditionFun();
+  //   // } else {
+  //   //   psyaiAudition(editorText.value);
+  //   // }
+  // }
 }
 async function auditionFun() {
   //试听接口
@@ -688,13 +689,17 @@ async function auditionFun() {
     {
       payload: {
         type: "ssml_gen_audio",
-        audio: {
-          speed: isTencent.value ? Math.floor(speed.value*10)/10 : speed.value,
-        },
+        // audio: {
+        //   speed: isTencent.value
+        //     ? Math.floor(speed.value * 10) / 10
+        //     : speed.value,
+        // },
         data: {
           text: htmlToSsml(),
           original_text: editorText.value,
-          speed: propsData.speed,
+          speed: isTencent.value
+            ? Math.floor(speed.value * 10) / 10
+            : speed.value,
           timbre_id: propsData.timbre_id,
         },
       },
@@ -1229,7 +1234,7 @@ function editorContentChange(content) {
 /**
  * 语速
  */
- const speed = ref(1);
+const speed = ref(1);
 const speedOptions = [
   {
     label: "0.5x",
@@ -1296,7 +1301,10 @@ function confirmClick() {
       payload: {
         type: "ssml_confirm",
         data: {
-          speed: isTencent.value ? Math.floor(speed.value*10)/10 : speed.value,
+          // speed: isTencent.value
+          //   ? Math.floor(speed.value * 10) / 10
+          //   : speed.value,
+          speed: speed.value,
           saveDataHTML: saveDataHTML.value,
           saveDataSSML: saveDataSSML.value,
           saveDataStr: saveDataStr.value,
@@ -1391,6 +1399,7 @@ function htmlToSsml() {
   const processedHTML = replaceTags(ssmlHtml).toString();
   // const processedStr = `<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"${PsyaiLangID.value}\"><voice name=\"${PsyaiVoiceID.value}\"><mstts:express-as style=\"${emotionVal.value}\">${processedHTML}</mstts:express-as></voice></speak>`;
   const processedStr = realSsmlTags.value.wrapper(
+    speed.value,
     processedHTML,
     PsyaiLangID.value,
     PsyaiVoiceID.value,
@@ -1500,7 +1509,7 @@ async function handleMessage(event) {
   if (event.data?.payload?.type === "ssml_get_pinyin_callback") {
     const pinyinText = event.data.payload.data;
     if (pinyinText) {
-      const transformedArr = (pinyinText.tone[0]||[]).map((value, i) => {
+      const transformedArr = (pinyinText.tone[0] || []).map((value, i) => {
         return { value, desc: value, numValue: pinyinText.toneNum[0][i] };
       });
       navDataList.pinyin = transformedArr;
@@ -1521,6 +1530,7 @@ async function handleMessage(event) {
 async function setProps(props) {
   Object.assign(propsData, props);
 
+  speed.value = propsData.speed;
   viewLang.value = props.lang || "zh-CN";
   // window.psyaiEditorUrl = props.baseUrl + "/";
   // window.psyaiEditorToken = props.token;

@@ -1,9 +1,9 @@
-const MICROSOFT = "azure";
-const TENCENT = "tencent";
-const CHUMENWENWEN = "moyin";
-const ALIYUN = "alibaba";
-const ELEVENLABS = "ElevenLabs";
-const MINIMAX = "minimax";
+export const MICROSOFT = "azure";
+export const TENCENT = "tencent";
+export const CHUMENWENWEN = "moyin";
+export const ALIYUN = "alibaba";
+export const ELEVENLABS = "ElevenLabs";
+export const MINIMAX = "minimax";
 
 export const ID_TO_COMPANYS = {
   "642a7b3fb9b3dde907f9a740": MICROSOFT,
@@ -38,8 +38,8 @@ export const SSML_TAG_AVALIBLE_MAP = {
   [TENCENT]: ["pauseEnum", "pinyin", "digitSymbolEnum"],
   [CHUMENWENWEN]: ["pauseEnum", "continuous", "pinyin", "digitSymbolEnum"],
   [ALIYUN]: ["pauseEnum", "digitSymbolEnum"],
-  [ELEVENLABS]:[],
-  [MINIMAX]:[],
+  [ELEVENLABS]: [],
+  [MINIMAX]: [],
 };
 
 export const REAL_SSML_TAG_MAP = {
@@ -84,12 +84,12 @@ export const REAL_SSML_TAG_MAP = {
     digitSymbolEnum: (content, value) =>
       `<say-as interpret-as="${value}">${content}</say-as>`,
   },
-  [ELEVENLABS]:{
+  [ELEVENLABS]: {
     wrapper: (speed, content) => content,
   },
-  [MINIMAX]:{
+  [MINIMAX]: {
     wrapper: (speed, content) => content,
-  }
+  },
 };
 /**
  * SSML 标签嵌套规则
