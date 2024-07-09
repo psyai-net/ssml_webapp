@@ -44,8 +44,8 @@ export const SSML_TAG_AVALIBLE_MAP = {
 
 export const REAL_SSML_TAG_MAP = {
   [MICROSOFT]: {
-    wrapper: (content, lang, voiceID, emotion) =>
-      `<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"${lang}\"><voice name=\"${voiceID}\"><mstts:express-as style=\"${emotion}\">${content}</mstts:express-as></voice></speak>`,
+    wrapper: (speed, content, lang, voiceID, emotion) =>
+      `<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"${lang}\"><voice name=\"${voiceID}\"><mstts:express-as style=\"${emotion}\"><prosody rate="${speed}">${content}</prosody></mstts:express-as></voice></speak>`,
     pauseEnum: (value) => `<break time=\"${value}\"/>`,
     speechSpeedEnum: (content, value) =>
       `<prosody rate="${value}">${content}</prosody>`,
@@ -59,7 +59,7 @@ export const REAL_SSML_TAG_MAP = {
       `<prosody pitch="${value}">${content}</prosody>`,
   },
   [TENCENT]: {
-    wrapper: (content) => `<speak>${content}</speak>`,
+    wrapper: (speed, content) => `<speak>${content}</speak>`,
     pauseEnum: (value) => `<break time=\"${value}\"/>`,
     pinyin: (content, value) =>
       `<phoneme alphabet="py" ph="${value[1]}">${content}</phoneme>`,
@@ -67,8 +67,8 @@ export const REAL_SSML_TAG_MAP = {
       `<say-as interpret-as="${value}">${content}</say-as>`,
   },
   [CHUMENWENWEN]: {
-    wrapper: (content, lang) =>
-      `<speak version="1.0" xml:lang="${lang}" xmlns="http://www.w3.org/2001/10/synthesis" domain="public.weather">${content}</speak>`,
+    wrapper: (speed, content, lang) =>
+      `<speak version="1.0" xml:lang="${lang}" xmlns="http://www.w3.org/2001/10/synthesis" domain="public.weather"><option speed="${speed}" >${content}</option></speak>`,
     pauseEnum: (value) => `<break time=\"${value}\"/>`,
     continuous: (content) => `<w>${content}</w>`,
     pinyin: (content, value) => `<p phoneme="${value[1]}">${content}</p>`,
@@ -76,16 +76,19 @@ export const REAL_SSML_TAG_MAP = {
       `<say-as interpret-as="${value}">${content}</say-as>`,
   },
   [ALIYUN]: {
-    wrapper: (content) => `<speak>${content}</speak>`,
+    wrapper: (speed, content) => {
+      const rate = Math.round(1000 * (1 - 1 / (speed < 0.66 ? 0.66 : speed)));
+      return `<speak rate="${rate}">${content}</speak>`;
+    },
     pauseEnum: (value) => `<break time=\"${value}\"/>`,
     digitSymbolEnum: (content, value) =>
       `<say-as interpret-as="${value}">${content}</say-as>`,
   },
   [ELEVENLABS]:{
-    wrapper: (content) => `${content}`,
+    wrapper: (speed, content) => content,
   },
   [MINIMAX]:{
-    wrapper: (content) => `${content}`,
+    wrapper: (speed, content) => content,
   }
 };
 /**
