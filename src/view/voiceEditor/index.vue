@@ -30,7 +30,7 @@
         ref="editorRef"
         :value="editorContent"
         :config="editorConfig"
-        :height="'480px'"
+        :height="'470px'"
         :width="'1080px'"
         class="textEditor"
       ></JoditVue>
@@ -701,6 +701,7 @@ async function auditionFun() {
             ? Math.floor(speed.value * 10) / 10
             : speed.value,
           timbre_id: propsData.timbre_id,
+          charge_type: "trial_listen",
         },
       },
     },
