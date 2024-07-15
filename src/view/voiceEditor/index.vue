@@ -39,7 +39,8 @@
       <div class="textEditorBottom">
         <div class="textEditorBottom__left">
           <div class="speedSel">
-            <div class="speedSel__box" @click="speedSelShow = !speedSelShow">
+            <!-- {(isElevenlabs ||isMinimax) ? <div class="speedSel__box disabled"> :<div class="speedSel__box" @click="speedSelShow = !speedSelShow">} -->
+              <div :class="`speedSel__box ${isElevenlabs || isMinimax ? 'disabled' : ''}`" @click="speedSelShow = !speedSelShow">
               <span>语速 {{ speedLabel }}</span>
               <span class="speedSel__box__arrow"></span>
             </div>
@@ -146,6 +147,8 @@ import { escapeSpecialCharacters, unescapeSpecialCharacters } from "@/utill";
 // config
 import {
   TENCENT,
+  ELEVENLABS,
+  MINIMAX,
   SSML_TAG_AVALIBLE_MAP,
   SSML_TAG_NEST_RULE,
   REAL_SSML_TAG_MAP,
@@ -186,6 +189,9 @@ const propsData = reactive({});
 // const speakerCompany = computed(() => ID_TO_COMPANYS[speakerInfo.company]);
 const speakerCompany = computed(() => propsData.company);
 const isTencent = computed(() => speakerCompany.value === TENCENT);
+const isElevenlabs = computed(() => speakerCompany.value === ELEVENLABS);
+const isMinimax = computed(() => speakerCompany.value === MINIMAX);
+
 const speakerCompanyAvalibleTags = computed(
   () => SSML_TAG_AVALIBLE_MAP[speakerCompany.value] || []
 );
