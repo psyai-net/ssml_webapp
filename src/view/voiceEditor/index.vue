@@ -39,8 +39,7 @@
       <div class="textEditorBottom">
         <div class="textEditorBottom__left">
           <div class="speedSel">
-            <!-- {(isElevenlabs ||isMinimax) ? <div class="speedSel__box disabled"> :<div class="speedSel__box" @click="speedSelShow = !speedSelShow">} -->
-              <div :class="`speedSel__box ${isElevenlabs || isMinimax ? 'disabled' : ''}`" @click="speedSelShow = !speedSelShow">
+            <div :class="`speedSel__box ${isElevenlabs || isMinimax ? 'disabled' : ''}`" @click="speedSelShow = !speedSelShow">
               <span>语速 {{ speedLabel }}</span>
               <span class="speedSel__box__arrow"></span>
             </div>
@@ -689,6 +688,8 @@ async function auditionClick() {
   // }
 }
 async function auditionFun() {
+  const { ssml, text } = getAuditionData();
+  if (!ssml || !text) return;
   //试听接口
   loaderShow.value = true;
   window.postMessage(
@@ -701,8 +702,8 @@ async function auditionFun() {
         //     : speed.value,
         // },
         data: {
-          text: htmlToSsml(),
-          original_text: editorText.value,
+          text: ssml,
+          original_text: text,
           speed: isTencent.value
             ? Math.floor(speed.value * 10) / 10
             : speed.value,
@@ -873,6 +874,22 @@ function isZeroWidthSpaceSelected() {
   // &#xFEFF 不存在于选区范围内
   return false;
 }
+function getSelectedElement() {
+  const selection = window.getSelection();
+  if (selection && selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    const container = document.createElement("div");
+    container.appendChild(range.cloneContents());
+    // 获取选中的标签
+    const selectedTags = Array.from(container.querySelectorAll("*"));
+    const selectedSSMLTags = Array.from(
+      container.querySelectorAll(".editorTags")
+    ).map((tag) => tag?.classList?.value?.split(" ")[1]);
+    const selectedTagNames = selectedTags.map((e) => e.tagName.toLowerCase());
+    const selectedPreTags = selectedTagNames.filter((d) => d === "pre");
+    return { selectedPreTags, selectedSSMLTags };
+  }
+}
 /**
  * 编辑区点击
  */
@@ -882,22 +899,6 @@ async function handleEditorContentClick(event) {
   if (!event.target) return;
 
   const clickTargetElType = event.target.dataset.type;
-  function getSelectedElement() {
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const container = document.createElement("div");
-      container.appendChild(range.cloneContents());
-      // 获取选中的标签
-      const selectedTags = Array.from(container.querySelectorAll("*"));
-      const selectedSSMLTags = Array.from(
-        container.querySelectorAll(".editorTags")
-      ).map((tag) => tag?.classList?.value?.split(" ")[1]);
-      const selectedTagNames = selectedTags.map((e) => e.tagName.toLowerCase());
-      const selectedPreTags = selectedTagNames.filter((d) => d === "pre");
-      return { selectedPreTags, selectedSSMLTags };
-    }
-  }
   // 调用函数以获取选中的DOM元素
   function checkSentenceCompleteness(str) {
     // const sentenceEndings = ['.', '?', '!', '。', '？', '！', 'br',''];
@@ -1327,7 +1328,7 @@ function confirmClick() {
  * 将html标签转为ssml标签：如果是可用标签，则转换为ssml标签，否则只获取内容文本
  * 同时对文本内容进行特殊字符转义
  */
-function htmlToSsml() {
+function htmlToSsml(targetEl) {
   function replaceTags(element) {
     // 创建一个空字符串来存储新的内容
     var newContent = "";
@@ -1401,9 +1402,9 @@ function htmlToSsml() {
 
     return newContent;
   }
+  targetEl = targetEl || document.querySelector(".ssmlHtml");
   // 选择所有的<span>元素
-  let ssmlHtml = document.querySelector(".ssmlHtml");
-  const processedHTML = replaceTags(ssmlHtml).toString();
+  const processedHTML = replaceTags(targetEl).toString();
   // const processedStr = `<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"${PsyaiLangID.value}\"><voice name=\"${PsyaiVoiceID.value}\"><mstts:express-as style=\"${emotionVal.value}\">${processedHTML}</mstts:express-as></voice></speak>`;
   const processedStr = realSsmlTags.value.wrapper(
     speed.value,
@@ -1416,6 +1417,34 @@ function htmlToSsml() {
   let str = processedStr.replace(/[\t\r\n]+(?![^<>]*>)/g, "");
   str = str.replace(/ {2,}/g, " ");
   return str;
+}
+// 获取需要试听的内容
+function getAuditionData() {
+  const selection = window.getSelection();
+  const selectionStr = selection.toString();
+  let ssml;
+  if (!selectionStr) {
+    ssml = htmlToSsml();
+    return {
+      ssml,
+      text: unescapeSpecialCharacters(ssml.replace(/<[^>]+>/g, "")),
+    };
+  }
+  const { selectedPreTags } = getSelectedElement();
+  if (selectedPreTags.length % 2) {
+    tipsFun("不支持跨标签试听");
+    return {};
+  }
+  const range = selection.getRangeAt(0);
+  const selectEl = document.createElement("div");
+  selectEl.appendChild(range.cloneContents());
+  const targetEl = document.createElement("div");
+  targetEl.innerHTML = removeEditorTagsOptionBox(selectEl);
+  ssml = htmlToSsml(targetEl);
+  return {
+    ssml,
+    text: unescapeSpecialCharacters(ssml.replace(/<[^>]+>/g, "")),
+  };
 }
 function keyDown() {
   // 键盘事件
