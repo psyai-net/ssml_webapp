@@ -1243,7 +1243,7 @@ function editorContentChange(content) {
  * 语速
  */
 const speed = ref(1);
-const speedOptions = [
+const speedOptions = ref([
   {
     label: "0.5x",
     value: 0.5,
@@ -1251,10 +1251,6 @@ const speedOptions = [
   {
     label: "0.75x",
     value: 0.75,
-  },
-  {
-    label: "0.9x",
-    value: 0.9,
   },
   {
     label: "1.0x",
@@ -1268,9 +1264,9 @@ const speedOptions = [
     label: "1.5x",
     value: 1.5,
   },
-];
+]);
 const speedLabel = computed(
-  () => speedOptions.find((item) => item.value === speed.value).label
+  () => speedOptions.value.find((item) => item.value === speed.value)?.label
 );
 const speedSelShow = ref(false);
 const speedSel = (v) => {
@@ -1569,8 +1565,13 @@ async function handleMessage(event) {
 }
 async function setProps(props) {
   Object.assign(propsData, props);
-
   speed.value = propsData.speed;
+  if (
+    speed.value &&
+    !speedOptions.value.find((item) => item.value === speed.value)
+  ) {
+    speedOptions.value.push({ label: `${speed.value}x`, value: speed.value });
+  }
   viewLang.value = props.lang || "zh-CN";
   // window.psyaiEditorUrl = props.baseUrl + "/";
   // window.psyaiEditorToken = props.token;
